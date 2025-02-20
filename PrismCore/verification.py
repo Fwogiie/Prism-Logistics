@@ -9,7 +9,7 @@ async def verifybutton():
     button = nextcord.ui.Button(label="Verify", style=nextcord.ButtonStyle.green)
     button.callback = button_callback
     # Make a viewable view
-    view = nextcord.ui.View()
+    view = nextcord.ui.View(timeout=None)
     view.add_item(button)
     return view
 
