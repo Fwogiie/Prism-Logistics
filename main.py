@@ -3,7 +3,7 @@ import tokens
 # Setup handler
 import PrismBot
 import PrismCore
-import PrismCore.PrismCommands.test
+import PrismCore.joinmessage
 
 bot.load_extension("onami")
 
