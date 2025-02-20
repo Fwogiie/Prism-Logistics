@@ -15,6 +15,6 @@ async def verifybutton():
 
 async def startup_logic():
     verifymessage = await bot.get_channel(1342216586412687390).fetch_message(1342221890256633987)
-    embed = nextcord.Embed(title="Verification", description="Click the button below to verify!")
+    embed = nextcord.Embed(title="Verification", description="Click the button below to verify!", color=nextcord.Color.purple())
     embed.set_thumbnail(PrismCore.variables.prism_logo_1024)
     await verifymessage.edit(embed=embed, view=await verifybutton())
