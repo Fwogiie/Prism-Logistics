@@ -1,4 +1,3 @@
-import nextcord
 from PrismBot import bot
 
 # THE join message
