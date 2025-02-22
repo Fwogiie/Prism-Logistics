@@ -5,6 +5,7 @@ import PrismBot
 import PrismCore
 import PrismCore.joinmessage
 import PrismCore.verification
+import PrismCore.driver_apps
 
 bot.load_extension("onami")
 
@@ -13,6 +14,8 @@ bot.load_extension("onami")
 async def on_ready():
     # Setup Verification
     await PrismCore.verification.startup_logic()
+    # Setup Driver Applications
+    await PrismCore.driver_apps.startup_logic()
 
 
 # Bot starter
