@@ -110,7 +110,7 @@ async def applybutton():
     button = nextcord.ui.Button(label="Apply", style=nextcord.ButtonStyle.green)
     button.callback = button_callback
     # Make a viewable view
-    view = nextcord.ui.View()
+    view = nextcord.ui.View(timeout=None)
     view.add_item(button)
     return view
 
