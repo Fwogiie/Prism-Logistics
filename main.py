@@ -6,6 +6,8 @@ import PrismCore
 import PrismCore.joinmessage
 import PrismCore.verification
 import PrismCore.driver_apps
+import PrismCore.PrismCommands.truckershubdownload
+import PrismCore.PrismCommands.joinvtc
 
 bot.load_extension("onami")
 
