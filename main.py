@@ -8,6 +8,7 @@ import PrismCore.verification
 import PrismCore.driver_apps
 import PrismCore.PrismCommands.truckershubdownload
 import PrismCore.PrismCommands.joinvtc
+import PrismCore.PrismCommands.create_convoy_event
 
 bot.load_extension("onami")
 
