@@ -44,9 +44,9 @@ async def invitebutton():
             event["vtcPosition"] = vtcpos.value
             event["pasted"] = invitetext.value
             event["discordId"] = str(ctx.user.id)
-            threadid = await invitationhandler(event)
             # Log the event URL
             print(tmpevent.value)
+            threadid = await invitationhandler(event)
             await ctx.send(f"Thank you for inviting us! We will be answering you in <#{threadid}> !", ephemeral=True)
         # Make a modal
         modal = nextcord.ui.Modal(title="Event Invitation", auto_defer=True)
