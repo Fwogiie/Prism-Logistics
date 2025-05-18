@@ -3,6 +3,7 @@ import nextcord
 import PrismCore.variables
 import json
 import requests
+from datetime import datetime
 
 # Startup logic triggered when the bot boots up!
 async def startup_logic():
@@ -27,9 +28,23 @@ async def invitationhandler(event: dict):
         print(f"Unexpected Error: {tmpeventreq.status_code}\n{tmpeventreq.content}")
         return
     tmpeventresp = json.loads(tmpeventreq.text)
+    print(tmpeventresp)
     invitethread = await bot.get_channel(1363139620430156038).create_thread(name=tmpeventresp["response"]["name"], type=nextcord.ChannelType(value=12))
     await invitethread.send(f"<@{event['discordId']}> <@&1363909930016309509>", embed=embed)
     await invitethread.send("We will be answering your invitation shortly!")
+    # Store the event Invite locally for tools needing it
+    with open("PrismCore/PrismStorage/convoys.json", "r") as readFile:
+        filecontents = json.loads(readFile.read())
+    requireddlcs = ""
+    for dlc in tmpeventresp["response"]["dlcs"]:
+        requireddlcs += f"{tmpeventresp["response"]["dlcs"][dlc]}, "
+    filecontents["eventInvites"][invitethread.id] = {"eventUrl": event['tmpEvent'], "eventName": tmpeventresp["response"]["name"],
+                                                     "requiredDlc": requireddlcs, "eventServer": tmpeventresp["response"]["server"]["name"],
+                                                     "departure": tmpeventresp["response"]["departure"], "arriving": tmpeventresp["response"]["arrive"],
+                                                     "meetupTime": tmpeventresp["response"]["meetup_at"], "startTime": tmpeventresp["response"]["start_at"],
+                                                     "eventBannerUrl": tmpeventresp["response"]["banner"], "slot": "", "slotImage": ""}
+    with open("PrismCore/PrismStorage/convoys.json", "w") as writeFile:
+        json.dump(filecontents, writeFile, indent=2)
     return invitethread.id
 
 async def invitebutton():
@@ -71,30 +86,96 @@ async def invitebutton():
     view.add_item(button)
     return view
 
-async def acceptbutton():
-    async def button_callback(ctx):
-        # Check if the user is a event team.
-        for role in ctx.user.roles:
-            if role.id == 1363909930016309509:
-                await ctx.message.delete()
-                await ctx.channel.send("Thank you for inviting us! We'll make sure to be there!\n\nThis thread may now be closed.")
-    # Make button
-    button = nextcord.ui.Button(label="Continue", style=nextcord.ButtonStyle.green)
-    button.callback = button_callback
-    # Make a viewable view
-    view = nextcord.ui.View()
-    view.add_item(button)
-    return view
+@bot.slash_command(name="event", description="Event team commands")
+async def _event_cmd(ctx):
+    # This commands sole purpose is for subcommands :3
+    pass
 
-@bot.command(name="close")
-async def accept_invitation(ctx):
-    # Check if the user is a event team.
-    for role in ctx.author.roles:
-        if role.id == 1363909930016309509:
-            # Make the confirmation embed.
-            embed = nextcord.Embed(title="Invitation Acceptance", description="Are you sure you wish to proceed? There are a few required things before proceeding.\n"
-                                                                               "Please make sure we have a __confirmed__ slot along with a slot image. and that the event has been correctly set in the event tab on top.\n"
-                                                                               "When those requirements are met, you may proceed with the button below.",
-                               color=nextcord.Color.purple())
-            await ctx.send(embed=embed, view=await acceptbutton())
-            return
+@_event_cmd.subcommand(name="edit", description="Edit current open event invitation")
+async def edit_event(ctx):
+    # Open the file to fetch current event
+    with open("PrismCore/PrismStorage/convoys.json", "r") as readFile:
+        filecontents = json.loads(readFile.read())
+    try:
+        event = filecontents["eventInvites"][str(ctx.channel.id)]
+    except KeyError:
+        await ctx.send("Could not find event.", ephemeral=True)
+        return
+
+    async def modal_callback(ctx):
+        event["slot"] = slot.value
+        event["slotImage"] = slotimg.value
+        filecontents["eventInvites"][str(ctx.channel.id)] = event
+        with open("PrismCore/PrismStorage/convoys.json", "w") as writeFile:
+            json.dump(filecontents, writeFile, indent=2)
+        await ctx.send("Successfully Updated slot information", ephemeral=True)
+    # Make a modal
+    modal = nextcord.ui.Modal(title="Event Edit", auto_defer=True)
+    # Make the modal fields
+    slot = nextcord.ui.TextInput(label="Slot", required=False, default_value=event["slot"])
+    slotimg = nextcord.ui.TextInput(label="Slot Image", required=False, default_value=event["slotImage"])
+    # Add fields to modal
+    modal.add_item(slot)
+    modal.add_item(slotimg)
+    # Set modal callback
+    modal.callback = modal_callback
+    # Send the modal when the apply button gets pressed
+    await ctx.response.send_modal(modal)
+    print(event)
+
+@_event_cmd.subcommand(name="preview", description="Preview current open event :3")
+async def preview_event(ctx):
+    with open("PrismCore/PrismStorage/convoys.json", "r") as readFile:
+        filecontents = json.loads(readFile.read())
+    try:
+        event = filecontents["eventInvites"][str(ctx.channel.id)]
+    except KeyError:
+        await ctx.send("Could not find event.", ephemeral=True)
+        return
+    embed = nextcord.Embed(title="Event Preview",
+                           color=nextcord.Color.purple(),
+                           description=f"- TruckersMP event: {event['eventUrl']}\n- Server: {event['eventServer']}\n"
+                                       f"# Departure:\n- Location: {event['departure']['location']}\n- City: {event['departure']['city']}\n"
+                                       f"- Our slot: {event['slot']}\n- Slot image: [image]({event['slotImage']})\n"
+                                       f"# Arriving:\n- Location: {event['arriving']['location']}\n- City: {event['arriving']['city']}\n"
+                                       f"# Requirements:\n- DLCs: {event['requiredDlc']}")
+    await ctx.send(embed=embed, ephemeral=True)
+
+@_event_cmd.subcommand(name="accept", description="Accept current open event invitation")
+async def accept_event(ctx):
+    await ctx.response.defer()
+    with open("PrismCore/PrismStorage/convoys.json", "r") as readFile:
+        filecontents = json.loads(readFile.read())
+    try:
+        event = filecontents["eventInvites"][str(ctx.channel.id)]
+    except KeyError:
+        await ctx.send("Could not find event.", ephemeral=True)
+        return
+    if not event["slot"] or not event["slotImage"]:
+        await ctx.send("Missing slot values! Please make sure you have both a slot and slot image set in `/event edit`", ephemeral=True)
+        return
+    filecontents["lastEventId"] += 1
+    filecontents["upcomingEvents"][str(filecontents["lastEventId"])] = event
+    filecontents["eventInvites"].pop(str(ctx.channel.id))
+    with open("PrismCore/PrismStorage/convoys.json", "w") as writeFile:
+        json.dump(filecontents, writeFile, indent=2)
+    discordevent = await ctx.guild.create_scheduled_event(name=f"{filecontents["lastEventId"]}. {event['eventName']}",
+                                           start_time=datetime.fromisoformat(event['meetupTime']),
+                                           end_time=datetime.fromisoformat(event['startTime']),
+                                           image=requests.get(event['eventBannerUrl']).content,
+                                           entity_type=nextcord.ScheduledEventEntityType.external,
+                                           metadata=nextcord.EntityMetadata(location="TMP"),
+                                           description=f"- TruckersMP event: {event['eventUrl']}\n- Server: {event['eventServer']}\n"
+                                                       f"# Departure:\n- Location: {event['departure']['location']}\n- City: {event['departure']['city']}\n"
+                                                       f"- Our slot: {event['slot']}\n- Slot image: [image]({event['slotImage']})\n"
+                                                       f"# Arriving:\n- Location: {event['arriving']['location']}\n- City: {event['arriving']['city']}\n"
+                                                       f"# Requirements:\n- DLCs: {event['requiredDlc']}")
+    event_url = f"https://discord.com/events/{ctx.guild.id}/{discordevent.id}"
+    await ctx.followup.send(f"[Event]({event_url}) has been created\n\nWe'll make sure to be there! Thank you for inviting us!")
+    await ctx.channel.edit(archived=True, locked=True)
+    alertchannel = bot.get_channel(1334567209044807826)
+    await alertchannel.send(f"Hello <@&1334562817776549899> !\nWe have just gotten a slot for [{event['eventName']}]({event_url})\n"
+                            f"I would really appreciate if you could Mark yourself as 'Interested' If you wish to attend that convoy!")
+
+
+
