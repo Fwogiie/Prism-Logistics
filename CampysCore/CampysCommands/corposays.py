@@ -1,4 +1,9 @@
+import json
+import os
 from random import randint
+
+import requests
+
 from PrismBot import bot
 
 
@@ -27,6 +32,10 @@ async def _corpo(ctx):
 
 @_corpo.subcommand(name="says", description="Generate a job to do together with corpo members!")
 async def corposays(ctx):
-    pickedjob = jobs[randint(0, len(jobs))]
+    randomnumber = json.loads(requests.post("https://api.random.org/json-rpc/4/invoke", json={"jsonrpc": "2.0", "method": "generateSignedIntegers", "id": 1, "params": {"apiKey": "86b3220b-4f36-4b6d-8eea-59feec9da224", "n": 1, "min": 1, "max": len(jobs), "replacement": False}}).text)["result"]["random"]["data"][0]
+    print(randomnumber)
+    pickedjob = jobs[randomnumber-1]
+    print(pickedjob)
+    print(randint(0, len(pickedjob)-1))
     delivery = jobsdelivery[pickedjob][randint(0, len(jobsdelivery[pickedjob])-1)]
     await ctx.send(f"Corpo wants you to deliver some **{pickedjob}** to **{delivery}**, get to work!")
