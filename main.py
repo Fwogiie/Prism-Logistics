@@ -11,6 +11,11 @@ import PrismCore.PrismCommands.truckershubdownload
 import PrismCore.PrismCommands.joinvtc
 import PrismCore.PrismCommands.create_convoy_event
 
+# Campys Galore setup (this is a side project as this bot is very incactive)
+import CampysCore
+import CampysCore.CampysCommands
+import CampysCore.CampysCommands.corposays
+
 bot.load_extension("onami")
 
 # Further Setup
