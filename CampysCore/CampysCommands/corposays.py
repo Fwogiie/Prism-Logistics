@@ -44,7 +44,7 @@ async def _corposays(ctx):
     delivery = jobsdelivery[pickedjob][randint(0, len(jobsdelivery[pickedjob])-1)]
     await ctx.send(f"Corpo wants you to deliver some **{pickedjob}** to **{delivery}**, get to work!")
 
-@_corposays.subcommand(name="list", description="Show the current jobs that you are able to be given")
+@_corpo.subcommand(name="joblist", description="Show the current jobs that you are able to be given")
 async def _corposaysjoblist(ctx):
     joblist = "The current jobs present in the list are:\n\n"
     for x in jobs:
