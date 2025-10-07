@@ -31,7 +31,7 @@ jobsdelivery = {"Coal": ["Gwangjin Coal Storage", "Steel Mill Steel Coil Coal Dr
                 "Wrecked vehicles": ["... Anywhere really xD"],
                 "Quicklime": ["Gapa Farms", "Main island Farms"],
                 "Police love": ["Main island towns", "Bottom island towns"],
-                "Planks": ["Gwangjin Construction Site 1", "Oji Drilling", "Gwangjin Construction Site F1"]}
+                "Planks": ["Gwangjin Construction Site 1", "Oji Drilling", "Gwangjin Construction Site F1", "Gwangjin Coal Mine"]}
 
 @bot.slash_command(name="corpo", guild_ids=[1404474707071209502])
 async def _corpo(ctx):
