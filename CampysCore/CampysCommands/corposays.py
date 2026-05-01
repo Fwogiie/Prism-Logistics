@@ -5,7 +5,7 @@ from random import randint
 import nextcord
 import requests
 import tokens
-from PrismBot import bot
+from SideBot import bot
 
 
 jobs = ['Coal', 'Iron', 'Logs', 'Cement', 'Concrete', 'Limestone', 'Fuel', 'Crude Oil', 'Milk', 'Containers', 'Toys',
@@ -35,14 +35,12 @@ jobsdelivery = {"Coal": ["Gwangjin Coal Storage", "Steel Mill Steel Coil Coal Dr
 jobsdelivery_easy = {
                 "Logs": ["Sangdo Lumbermil Drop Off", "Migeum Log Warehouse (doing a 50 20ft logs contract)", "Migeum Log Warehouse (doing a 20 12ft logs contract)"],
                 "Cement": ["Seongsan Concrete Factory Cement Drop"],
-                "Concrete": ["Gwangjin Town Construction Site #1", "Gwangjin Construction Site F1"],
                 "Fuel": ["Seongsan Concrete Factory Fuel Drop", "Migeum Log Warehouse", "Noksan Fuel Storage"],
                 "Crude Oil": ["Sanho Oil Refinery"],
                 "Milk": ["Daily Cheese Inc. Milk Drop"],
                 "Container": ["Sanho Oil Refinery"],
-                "Toys": ["Gwangjin Supermarket"],
-                "Cheese": ["Gwangjin Supermarket", "Gangjung Supermarket"],
-                "Bread": ["Gwangjin Supermarket", "Gangjung Supermarket"],
+                "Cheese": ["Gangjung Supermarket"],
+                "Bread": ["Gangjung Supermarket"],
                 "Sand": ["Concrete Factory Sand Dump"],
                 "Plastics": ["Toy Factory"],
                 "Quicklime": ["Gapa Farms", "Main island Farms"]}
@@ -53,7 +51,7 @@ deliverylocations = ['Gwangjin Storage', 'Steel Mill', 'Sangdo Lumbermill', 'Mig
                      'Gangjung Supermarket', 'Concrete Factory', 'Toy Factory', 'Gapa Farms', 'Oji Drilling',
                      'Gwangjin Coal Mine', 'Gwangjin Iron Mine']
 
-deliverylocations_easy = ['Gwangjin Storage', 'Sangdo Lumbermill', 'Seongsan Concrete Factory',
+deliverylocations_easy = ['Sangdo Lumbermill', 'Seongsan Concrete Factory',
                           'Nobong Cement Factory', 'Noksan', 'Sanho Oil Refinery', 'Daily Cheese Inc.',
                           'Gangjung Supermarket', 'Concrete Factory', 'Toy Factory', 'Gapa Farms', 'Oji Drilling']
 
